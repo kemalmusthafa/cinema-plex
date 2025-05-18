@@ -1,5 +1,4 @@
-const API_KEY = '7d2381c5682cdf6da502ddee007148f3';
-const BASE_URL = 'https://api.themoviedb.org/4';
+const API_KEY = '7d2381c5682cdf6da502ddee007148f3'; 
 const BASE_URL_V3 = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 
@@ -10,32 +9,7 @@ interface ApiOptions {
   body?: string;
 }
 
-// Headers for API requests
-const headers = {
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${API_KEY}`
-};
-
-// Function to make API requests
-export const fetchData = async (endpoint: string, options = {}) => {
-  try {
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-      headers,
-      ...options
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('API fetch error:', error);
-    throw error;
-  }
-};
-
-// Function to make v3 API requests (fallback)
+// Function to make v3 API requests with improved error handling
 export const fetchDataV3 = async (endpoint: string, options: ApiOptions = {}) => {
   try {
     const { params = {}, headers = {}, method = 'GET', body } = options;
@@ -59,27 +33,30 @@ export const fetchDataV3 = async (endpoint: string, options: ApiOptions = {}) =>
         ...headers
       }
     };
-
+    
     if (body) {
       fetchOptions.body = body;
     }
     
+    console.log(`Making API request to: ${endpoint}`);
     const response = await fetch(url, fetchOptions);
     
     if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`API error: ${response.status} - ${errorText}`);
     }
     
     return await response.json();
   } catch (error) {
-    console.error('API fetch error:', error);
+    console.error(`API fetch error for ${endpoint}:`, error);
     throw error;
   }
 };
-// Get image URL
+
+// Get image URL with fallback
 export const getImageUrl = (path: string | null, size: string = 'w500') => {
   if (!path) return '/placeholder-image.jpg';
   return `${IMAGE_BASE_URL}/${size}${path}`;
 };
 
-export default { fetchData, fetchDataV3, getImageUrl };
+export default { fetchDataV3, getImageUrl };

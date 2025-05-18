@@ -134,7 +134,7 @@ export const checkMovieWatchlist = async (
   sessionId: string
 ): Promise<MovieAccountStates> => {
   return fetchDataV3(`/movie/${movieId}/account_states`, {
-    params: { session_id: sessionId }
+    params: { session_id: sessionId, accountId }
   });
 };
 
@@ -145,7 +145,7 @@ export const checkMovieFavorite = async (
   sessionId: string
 ): Promise<MovieAccountStates> => {
   return fetchDataV3(`/movie/${movieId}/account_states`, {
-    params: { session_id: sessionId }
+    params: { session_id: sessionId, accountId }
   });
 };
 

@@ -1,13 +1,17 @@
 import type { AuthResponse, User } from '../types';
 import { fetchDataV3 } from './api';
 
-
 const LOCAL_STORAGE_KEY = 'cinema_plex_auth';
 
 // Get authentication token
 export const getRequestToken = async (): Promise<string> => {
   try {
     const data = await fetchDataV3('/authentication/token/new');
+    
+    if (!data.success || !data.request_token) {
+      throw new Error(`Failed to get request token: ${JSON.stringify(data)}`);
+    }
+    
     return data.request_token;
   } catch (error) {
     console.error('Error getting request token:', error);
@@ -20,16 +24,13 @@ export const createSession = async (requestToken: string): Promise<string> => {
   try {
     const data = await fetchDataV3('/authentication/session/new', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
       body: JSON.stringify({ request_token: requestToken })
     }) as AuthResponse;
     
     if (data.success && data.session_id) {
       return data.session_id;
     } else {
-      throw new Error('Failed to create session');
+      throw new Error(`Failed to create session: ${JSON.stringify(data)}`);
     }
   } catch (error) {
     console.error('Error creating session:', error);
@@ -41,9 +42,6 @@ export const createSession = async (requestToken: string): Promise<string> => {
 export const getAccountDetails = async (sessionId: string): Promise<User> => {
   try {
     const data = await fetchDataV3('/account', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
       params: {
         session_id: sessionId
       }
@@ -64,8 +62,8 @@ export const getAccountDetails = async (sessionId: string): Promise<User> => {
 export const login = async (): Promise<void> => {
   try {
     const requestToken = await getRequestToken();
-    // Redirect to TMDB authentication page
-    window.location.href = `https://www.themoviedb.org/authenticate/${requestToken}?redirect_to=${window.location.origin}/auth-callback`;
+    // Redirect to TMDB authentication page with correct URL format
+    window.location.href = `https://www.themoviedb.org/authenticate/${requestToken}?redirect_to=${encodeURIComponent(window.location.origin + '/auth-callback')}`;
   } catch (error) {
     console.error('Login error:', error);
     throw error;

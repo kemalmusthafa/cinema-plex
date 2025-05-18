@@ -33,7 +33,7 @@ const MovieDetailsPage: React.FC = () => {
             const accountStates = await movieService.checkMovieWatchlist(
               user.id,
               movieId,
-              user.session_id
+              user.session_id,
             );
 
             setInWatchlist(accountStates.watchlist);

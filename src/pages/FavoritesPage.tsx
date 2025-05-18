@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import type { Movie } from '../types';
 import { Navigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import MovieGrid from '../components/movie/MovieGrid';
-import { useAuth } from '../context/AuthContext';
 import movieService from '../services/movieService';
-import type { Movie } from '../types';
 
 
 const FavoritesPage: React.FC = () => {

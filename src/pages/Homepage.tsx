@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import MovieGrid from '../components/movie/MovieGrid';
 import movieService from '../services/movieService';
 import type { Movie } from '../types';
